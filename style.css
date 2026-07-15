@@ -493,7 +493,7 @@ section { position: relative; padding: 0 8vw; }
   position: absolute; bottom: 44px; left: 8vw; right: 8vw;
   height: 1px; background: rgba(19,41,75,0.12); z-index: 5;
 }
-.insta-progress-bar { height: 100%; width: 0%; background: var(--blue); }
+.insta-progress-bar { height: 100%; width: 100%; background: var(--blue); transform: scaleX(0); transform-origin: left; }
 .insta-hint {
   position: absolute; bottom: 58px; right: 8vw; z-index: 5;
   font-family: 'IBM Plex Mono', monospace;
@@ -543,6 +543,15 @@ footer { margin-top: 8vh; padding: 50px 8vw 40px; border-top: 1px solid var(--li
    RESPONSIVO
    ══════════════════════════ */
 @media (max-width: 860px) {
+  /* Efeitos de composição são caros em GPUs móveis durante a rolagem. */
+  #ribbon-layer { display: none; }
+  .blob { filter: none; opacity: .18; }
+  .light-rays { display: none; }
+  .hero-photo::after { mix-blend-mode: normal; }
+  .loc-card, .countdown-box, .play-btn { backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .prog-card .grain { mix-blend-mode: normal; opacity: .18; }
+  .insta-tile { box-shadow: 0 10px 24px rgba(14,27,46,.12); }
+  .insta-track { will-change: auto; }
   .insta-sticky { height: 78vh; }
   .insta-tile { width: 58vw; }
   .insta-hint { display: none; }

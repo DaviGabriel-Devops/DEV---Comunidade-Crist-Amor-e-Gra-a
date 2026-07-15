@@ -52,9 +52,11 @@ mobileMenu.querySelectorAll('a').forEach(a => {
 });
 
 /* ── 3. PARALLAX IMAGE BANDS ── */
+const mobilePerformanceMode = window.matchMedia('(max-width: 860px), (prefers-reduced-motion: reduce)');
 const parallaxLayers = document.querySelectorAll('[data-parallax] .layer');
 
 function drawParallax() {
+  if (mobilePerformanceMode.matches) return;
   parallaxLayers.forEach(el => {
     const band  = el.closest('.image-band');
     const rect  = band.getBoundingClientRect();
@@ -75,8 +77,10 @@ function buildRays(el, count) {
     el.appendChild(s);
   }
 }
-buildRays(document.getElementById('rays1'), 10);
-buildRays(document.getElementById('rays2'), 10);
+if (!mobilePerformanceMode.matches) {
+  buildRays(document.getElementById('rays1'), 10);
+  buildRays(document.getElementById('rays2'), 10);
+}
 
 /* ── 5. INSTAGRAM — rail horizontal por scroll vertical ── */
 const instaPin   = document.getElementById('instaPin');
@@ -100,12 +104,13 @@ function driveInstaRail() {
   const scrolled = -rect.top;
   const progress = Math.max(0, Math.min(1, scrolled / travel));
   instaTrack.style.transform = `translateX(-${progress * travel}px)`;
-  if (instaBar) instaBar.style.width = (progress * 100) + '%';
+  if (instaBar) instaBar.style.transform = `scaleX(${progress})`;
 }
 
-/* Touch/drag no rail de Instagram (mobile) */
+/* No toque, o trilho é conduzido pelo scroll vertical. Disputar touchmove
+   com o navegador gera engasgos, especialmente no Safari/iOS. */
 (function initInstaTouch() {
-  if (!instaTrack) return;
+  if (!instaTrack || mobilePerformanceMode.matches) return;
   let isDown = false, startX = 0, scrollLeft = 0;
 
   instaTrack.addEventListener('mousedown', e => {
@@ -122,23 +127,9 @@ function driveInstaRail() {
     instaTrack.style.transform = `translateX(${scrollLeft + (x - startX) * 1.5}px)`;
   });
 
-  /* Touch (iOS Safari) */
-  let touchStartX = 0;
-  instaTrack.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].pageX;
-  }, { passive: true });
-  instaTrack.addEventListener('touchmove', e => {
-    const dx = e.touches[0].pageX - touchStartX;
-    const current = parseFloat(instaTrack.style.transform.replace(/[^-\d.]/g, '') || 0);
-    instaTrack.style.transform = `translateX(${current + dx * 0.8}px)`;
-    touchStartX = e.touches[0].pageX;
-  }, { passive: true });
 })();
 
-window.addEventListener('resize', sizeInstaPin);
-window.addEventListener('load',   sizeInstaPin);
 sizeInstaPin();
-setTimeout(sizeInstaPin, 700);
 
 /* ── 6. RIBBON SVG ── */
 const svgEl     = document.getElementById('ribbonSvg');
@@ -169,6 +160,7 @@ function buildStrandD(points, ampScale, phaseShift) {
 }
 
 function buildRibbonPath() {
+  if (mobilePerformanceMode.matches) return;
   const docH = document.body.scrollHeight;
   const w    = window.innerWidth;
   const ribbonLayer = document.getElementById('ribbon-layer');
@@ -205,6 +197,7 @@ function buildRibbonPath() {
 }
 
 function drawRibbon() {
+  if (mobilePerformanceMode.matches) return;
   const scrollTop = window.scrollY;
   const docH      = document.body.scrollHeight - window.innerHeight;
   const frac      = Math.min(1, Math.max(0, scrollTop / docH));
@@ -229,16 +222,39 @@ function onScroll() {
   driveInstaRail();
 }
 
-window.addEventListener('scroll', onScroll, { passive: true });
-window.addEventListener('resize', () => { buildRibbonPath(); drawRibbon(); });
+/* Um scroll pode disparar várias vezes no mesmo quadro. Consolidar o trabalho
+   em requestAnimationFrame reduz leituras/escritas de layout repetidas. */
+let scrollFrame = 0;
+function requestScrollUpdate() {
+  if (scrollFrame) return;
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = 0;
+    onScroll();
+  });
+}
+
+let resizeFrame = 0;
+function requestResizeUpdate() {
+  if (resizeFrame) cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(() => {
+    resizeFrame = 0;
+    sizeInstaPin();
+    buildRibbonPath();
+    drawRibbon();
+    requestScrollUpdate();
+  });
+}
+
+window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+window.addEventListener('resize', requestResizeUpdate, { passive: true });
 buildRibbonPath();
 drawRibbon();
 onScroll();
-window.addEventListener('load', () => { buildRibbonPath(); drawRibbon(); });
+window.addEventListener('load', requestResizeUpdate);
 if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => { buildRibbonPath(); drawRibbon(); });
+  document.fonts.ready.then(requestResizeUpdate);
 }
-setTimeout(() => { buildRibbonPath(); drawRibbon(); }, 900);
+setTimeout(requestResizeUpdate, 900);
 
 /* ── 8. COUNTDOWN — America/Sao_Paulo (UTC-3, sem horário de verão) ── */
 const SCHEDULE = [
