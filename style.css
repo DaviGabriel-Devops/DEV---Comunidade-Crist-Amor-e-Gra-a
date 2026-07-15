@@ -339,11 +339,36 @@ section { position: relative; padding: 0 8vw; }
 .section-title i { color: var(--blue); font-style: italic; }
 .section-note { max-width: 280px; font-size: 14px; color: var(--gray); line-height: 1.6; padding-bottom: 6px; }
 .card-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+#programas .section-inner {
+  max-width: 1520px;
+}
 .prog-card {
   position: relative; border-radius: 18px; overflow: hidden;
-  aspect-ratio: 3/4; background: var(--navy); cursor: pointer;
+  aspect-ratio: 16/9; background: var(--navy); cursor: pointer;
   transition: transform .5s cubic-bezier(.16,1,.3,1);
 }
+
+.video-thumb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .72;
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1), opacity .35s ease;
+}
+
+.prog-card:hover .video-thumb {
+  transform: scale(1.06);
+  opacity: 1;
+}
+
+.prog-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+
 .prog-card:hover { transform: translateY(-8px); }
 .prog-card .thumb { position: absolute; inset: 0; }
 .prog-card:nth-child(1) .thumb { background: linear-gradient(155deg, #1B3A6B, #2F6FED 60%, #7FA6F5); }
@@ -472,10 +497,19 @@ section { position: relative; padding: 0 8vw; }
 }
 .follow-btn:hover { background: var(--blue); transform: translateY(-2px); }
 .insta-tile {
-  flex-shrink: 0; width: min(320px, 62vw); aspect-ratio: 4/5;
-  border-radius: 22px; overflow: hidden; position: relative;
+  flex-shrink: 0;
+  width: min(320px, 62vw);
+  height: auto;
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
   box-shadow: 0 20px 44px rgba(14,27,46,0.18);
-  background-size: cover; background-position: center;
+}
+
+.insta-tile img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .insta-tile:nth-child(even) { margin-top: 36px; }
 .insta-tile .tint {
@@ -585,3 +619,4 @@ footer { margin-top: 8vh; padding: 50px 8vw 40px; border-top: 1px solid var(--li
 @media (max-width: 380px) {
   .card-grid { grid-template-columns: 1fr; }
 }
+

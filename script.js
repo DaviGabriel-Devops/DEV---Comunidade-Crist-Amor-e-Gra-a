@@ -89,12 +89,17 @@ const instaBar   = document.getElementById('instaProgressBar');
 
 function sizeInstaPin() {
   if (!instaPin || !instaTrack) return;
-  const trackW  = instaTrack.scrollWidth;
-  const viewW   = window.innerWidth;
-  const travel  = Math.max(0, trackW - viewW + (viewW * 0.08));
-  instaPin.style.height   = (window.innerHeight + travel) + 'px';
+
+  const trackW = instaTrack.scrollWidth;
+  const viewW = window.innerWidth;
+  const finalGap = viewW * 0.18; // espaço após a última imagem
+  const travel = Math.max(0, trackW - viewW + finalGap);
+
+  instaPin.style.height = (window.innerHeight + travel + finalGap) + 'px';
   instaPin.dataset.travel = travel;
 }
+
+new ResizeObserver(sizeInstaPin).observe(instaTrack);
 
 function driveInstaRail() {
   if (!instaPin || !instaTrack) return;
