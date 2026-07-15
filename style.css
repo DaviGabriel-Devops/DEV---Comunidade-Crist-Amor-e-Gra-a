@@ -620,3 +620,18 @@ footer { margin-top: 8vh; padding: 50px 8vw 40px; border-top: 1px solid var(--li
   .card-grid { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 600px) {
+  #programas .section-inner {
+    max-width: none;
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .prog-card {
+    aspect-ratio: 16 / 9;
+  }
+}
+
