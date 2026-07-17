@@ -772,7 +772,7 @@ footer { margin-top: 8vh; padding: 50px 8vw 40px; border-top: 1px solid var(--li
   font-family: "Cormorant Garamond", serif;
   font-weight: 600;
   font-style: normal;
-  font-size: 32px;
+  font-size: 40px;
   letter-spacing: -0.02em;
 }
 
@@ -782,3 +782,27 @@ footer { margin-top: 8vh; padding: 50px 8vw 40px; border-top: 1px solid var(--li
   object-fit: contain;
   flex-shrink: 0;
 }
+
+@media (max-width: 768px) {
+  .brand-mark {
+    font-size: 30px;
+  }
+
+  .brand-logo {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-mark {
+    font-size: 24px;
+  }
+
+  .brand-logo {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+
